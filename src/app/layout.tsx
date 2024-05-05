@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins as FontSans } from "next/font/google";
 import "./globals.css";
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
-const poppins = Poppins({
+const fontSans = FontSans({
 	subsets: ["latin"],
-	weight: ["300", "400", "500", "600", "700", "800"],
+	variable: "--font-sans",
+	weight: ["200", "400", "600", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -13,14 +15,16 @@ export const metadata: Metadata = {
 	description: "To learn about Next.js and TypeScript",
 };
 
-export default function RootLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html lang="en">
-			<body className={poppins.className}>{children}</body>
+			<body
+				className={cn(
+					"min-h-screen bg-background font-sans antialiased text-gray-900",
+					fontSans.variable
+				)}>
+				{children}
+			</body>
 		</html>
 	);
 }
