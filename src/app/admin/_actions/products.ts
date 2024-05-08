@@ -19,6 +19,11 @@ const productSchema = z.object({
 	image: imageSchema.refine((file) => file.size > 0, "Required"),
 });
 
+const editProductSchema = productSchema.extend({
+	file: fileSchema.optional(),
+	image: imageSchema.optional(),
+});
+
 export async function addProduct(prev: unknown, formData: FormData) {
 	const productData = Object.fromEntries(formData.entries());
 	const { success, data, error } = productSchema.safeParse(productData);
@@ -54,6 +59,65 @@ export async function addProduct(prev: unknown, formData: FormData) {
 	redirect(ROUTES.ADMIN_PRODUCTS);
 }
 
+export async function editProduct(
+	id: string,
+	prev: unknown,
+	formData: FormData
+) {
+	const product = await prisma.product.findUnique({
+		where: {
+			id,
+		},
+	});
+
+	if (!product) {
+		return notFound();
+	}
+
+	const productData = Object.fromEntries(formData.entries());
+	const { success, data, error } = editProductSchema.safeParse(productData);
+
+	if (!success) {
+		console.log("Error:", error.formErrors.fieldErrors);
+		return error.formErrors.fieldErrors;
+	}
+
+	const { name, description, file, image, priceInCents } = data;
+
+	let filePath = product.filePath;
+	let imagePath = product.imagePath;
+
+	if (file && file?.size > 0) {
+		await fs.unlink(product.filePath);
+		filePath = `products/${crypto.randomUUID()}-${file.name}`;
+		await fs.writeFile(filePath, Buffer.from(await file.arrayBuffer()));
+	}
+
+	if (image && image?.size > 0) {
+		await fs.unlink(`public${product.imagePath}`);
+		const imagePath = `/products/${crypto.randomUUID()}-${image.name}`;
+		await fs.writeFile(
+			`public${imagePath}`,
+			Buffer.from(await image.arrayBuffer())
+		);
+	}
+
+	await prisma.product.update({
+		where: {
+			id,
+		},
+		data: {
+			name,
+			description,
+			priceInCents,
+			filePath,
+			imagePath,
+		},
+	});
+
+	redirect(ROUTES.ADMIN_PRODUCTS);
+}
+
 export async function toggleProductAvailability(
 	id: string,
 	isAvailableForPurchase: boolean
@@ -76,4 +140,7 @@ export async function deleteProduct(id: string) {
 	});
 
 	if (!product) return notFound();
+
+	await fs.unlink(product.filePath);
+	await fs.unlink(`public${product.imagePath}`);
 }
