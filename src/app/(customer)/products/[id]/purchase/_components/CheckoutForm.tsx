@@ -20,7 +20,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
-import React, { FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 
 type CheckoutFormProps = {
 	product: {
@@ -103,11 +103,9 @@ const PaymentForm = ({
 			if (error.type === "card_error" || error.type === "validation_error") {
 				setError(error.message as string);
 			} else {
-				console.log(error);
 				setError("An unknown error occurred");
 			}
 		} catch (error) {
-			console.log(error);
 			setError("An unknown error occurred");
 		} finally {
 			setLoading(false);

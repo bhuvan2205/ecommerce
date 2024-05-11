@@ -10,3 +10,14 @@ export async function userOrderExists(email: string, productId: string) {
 
 	return !!order;
 }
+
+export async function createDownloadVerification(productId: string) {
+	return (
+		await prisma.downloadVerification.create({
+			data: {
+				productId,
+				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
+			},
+		})
+	).id;
+}

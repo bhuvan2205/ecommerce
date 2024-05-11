@@ -19,10 +19,21 @@ export default async function Page({
 	const paymentIntent = await stripe.paymentIntents.create({
 		amount: product.priceInCents,
 		currency: "USD",
+		shipping: {
+			name: "Jenny Rosen",
+			address: {
+				line1: "510 Townsend St",
+				postal_code: "98140",
+				city: "San Francisco",
+				state: "CA",
+				country: "US",
+			},
+		},
+		description: "Software development services",
 		metadata: { productId: product.id },
 	});
 
-	if (!paymentIntent) {
+	if (!paymentIntent.client_secret) {
 		throw new Error("Failed to create Stripe Payment Intent");
 	}
 
