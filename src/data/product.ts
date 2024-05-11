@@ -22,25 +22,6 @@ export const getSalesData = async () => {
 	};
 };
 
-export const getCustomersData = async () => {
-	const [userCount, orderData] = await Promise.all([
-		prisma.user.count(),
-		prisma.order.aggregate({
-			_sum: {
-				pricePaidInCents: true,
-			},
-		}),
-	]);
-
-	return {
-		userCount,
-		averageValuePerUser:
-			userCount === 0
-				? 0
-				: (orderData._sum.pricePaidInCents ?? 0) / userCount / 100,
-	};
-};
-
 export const getProductsData = async () => {
 	const [activeProducts, inActiveProducts] = await Promise.all([
 		prisma.product.count({

@@ -6,10 +6,10 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import {
-	getCustomersData,
 	getProductsData,
 	getSalesData,
 } from "@/data/product";
+import { getCustomersData } from "@/data/users";
 import { formatCurrency, formatNumber } from "@/lib/helper";
 import { sleep } from "@/lib/utils";
 
