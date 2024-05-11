@@ -120,7 +120,8 @@ export async function editProduct(
 
 	revalidatePath(ROUTES.HOME);
 	revalidatePath(ROUTES.PRODUCTS);
-	
+	revalidatePath(ROUTES.ADMIN_PRODUCTS);
+
 	redirect(ROUTES.ADMIN_PRODUCTS);
 }
 

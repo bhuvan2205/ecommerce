@@ -16,7 +16,7 @@ export default async function Page({
 
 	return (
 		<>
-			<PageHeader centered>Add Product</PageHeader>
+			<PageHeader centered>Edit Product</PageHeader>
 			<ProductForm product={product} />
 		</>
 	);
