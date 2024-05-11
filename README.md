@@ -1,4 +1,4 @@
-![image](https://github.com/bhuvan2205/ecommerce/assets/56767330/dba3a7fc-9c29-4aa0-8cbb-8a92728412f4)This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
