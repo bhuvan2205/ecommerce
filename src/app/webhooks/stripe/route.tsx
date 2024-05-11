@@ -1,9 +1,10 @@
-import { createDownloadVerification } from "@/app/(customer)/actions/order";
+import { createDownloadVerification } from "@/app/(customer)/_actions/order";
 import prisma from "@/config/db";
 import { getSingleProduct } from "@/data/product";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import PurchaseReceiptEmail from "@/email/PurchaseReceiptEmail";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const resend = new Resend(process.env.EMAIL_SECRET_KEY!);
@@ -15,11 +16,15 @@ export async function POST(request: NextRequest) {
 		process.env.STRIPE_WEBHOOK_KEY!
 	);
 
+	console.log("🚀 ~ POST ~ event:", event.type);
+
 	if (event.type === "charge.succeeded") {
 		const charge = event.data.object;
 		const productId = charge.metadata.productId;
 		const email = charge.billing_details.email;
 		const pricePaidInCents = charge.amount;
+
+		console.log("🚀 ~ POST ~ email:", email);
 
 		const product = await getSingleProduct(productId);
 
@@ -50,6 +55,7 @@ export async function POST(request: NextRequest) {
 				},
 			},
 		});
+		console.log("🚀 ~ POST ~ order:", order);
 
 		const downloadVerificationId = await createDownloadVerification(productId);
 
@@ -57,7 +63,13 @@ export async function POST(request: NextRequest) {
 			from: `Support <${process.env.SENDER_EMAIL}>`,
 			to: email,
 			subject: "Order Confirmation",
-			html: `<p>Congrats on sending your <strong>first email</strong>! ${downloadVerificationId}</p>`,
+			react: (
+				<PurchaseReceiptEmail
+					order={order}
+					product={product}
+					downloadVerificationId={downloadVerificationId}
+				/>
+			),
 		});
 	}
 

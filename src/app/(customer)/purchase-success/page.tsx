@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Stripe from "stripe";
-import { createDownloadVerification } from "../actions/order";
+import { createDownloadVerification } from "../_actions/order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
