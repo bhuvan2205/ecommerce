@@ -1,35 +1,12 @@
 import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import prisma from "@/config/db";
-import { sleep } from "@/lib/utils";
 import { Product } from "@prisma/client";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-
-export const getPopularProducts = async () => {
-	return await prisma.product.findMany({
-		where: {
-			isAvailableForPurchase: true,
-		},
-		orderBy: {
-			orders: { _count: "desc" },
-		},
-		take: 6,
-	});
-};
-
-export const getNewProducts = async () => {
-	return await prisma.product.findMany({
-		where: {
-			isAvailableForPurchase: true,
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
-		take: 6,
-	});
-};
+import { ProductList } from "./_components/ProductList";
+import { getNewProducts, getPopularProducts } from "@/data/product";
 
 export default function Page() {
 	return (
@@ -40,7 +17,7 @@ export default function Page() {
 	);
 }
 
-function ProductSection({
+export function ProductSection({
 	fetchProducts,
 	title,
 }: {
@@ -71,27 +48,5 @@ function ProductSection({
 				</Suspense>
 			</div>
 		</div>
-	);
-}
-
-async function ProductList({
-	fetchProducts,
-}: {
-	fetchProducts: () => Promise<Product[]>;
-}) {
-	const products = await fetchProducts();
-	return (
-		<>
-			{products?.map((product) => (
-				<ProductCard
-					key={product.id}
-					name={product.name}
-					priceInCents={product.priceInCents}
-					description={product.description}
-					id={product.id}
-					imagePath={product.imagePath}
-				/>
-			))}
-		</>
 	);
 }

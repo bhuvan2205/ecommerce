@@ -1,4 +1,5 @@
 import prisma from "@/config/db";
+import cache from "@/lib/cache";
 
 export const getSingleProduct = async (id: string) =>
 	await prisma.product.findUnique({
@@ -58,3 +59,44 @@ export const getProductsData = async () => {
 		inActiveProducts,
 	};
 };
+
+export const getPopularProducts = cache(
+	async () => {
+		return await prisma.product.findMany({
+			where: {
+				isAvailableForPurchase: true,
+			},
+			orderBy: {
+				orders: { _count: "desc" },
+			},
+			take: 6,
+		});
+	},
+	["/", "getPopularProducts"],
+	{ revalidate: 60 * 24 * 60 }
+);
+
+export const getNewProducts = cache(async () => {
+	return await prisma.product.findMany({
+		where: {
+			isAvailableForPurchase: true,
+		},
+		orderBy: {
+			createdAt: "desc",
+		},
+		take: 6,
+	});
+}, ["/", "getNewProducts"]);
+
+export const getAllProducts = cache(
+	async () => {
+		return await prisma.product.findMany({
+			where: {
+				isAvailableForPurchase: true,
+			},
+			orderBy: { name: "asc" },
+		});
+	},
+	["/products", "getAllProducts"],
+	{}
+);
